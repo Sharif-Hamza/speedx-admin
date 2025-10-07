@@ -154,7 +154,7 @@ export default function UsersTable() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search users by email or ID..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
           />
         </div>
 
@@ -243,8 +243,8 @@ export default function UsersTable() {
       {selectedUser && !showBadgeModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setSelectedUser(null)}>
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-2xl font-bold mb-4">User Details</h2>
-            <div className="space-y-3">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">User Details</h2>
+            <div className="space-y-3 text-gray-900">
               <p><strong>Email:</strong> {selectedUser.email} {selectedUser.email_confirmed && <span className="text-green-600">✓</span>}</p>
               <p><strong>Username:</strong> {selectedUser.username || 'Not set'}</p>
               <p><strong>User ID:</strong> {selectedUser.user_id}</p>
@@ -268,13 +268,13 @@ export default function UsersTable() {
       {showBadgeModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowBadgeModal(false)}>
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-2xl font-bold mb-4">🏆 Award Badge</h2>
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">🏆 Award Badge</h2>
             <p className="mb-4 text-gray-600">Award badge to {selectedUser.email}</p>
             
             <select
               value={selectedBadge}
               onChange={(e) => setSelectedBadge(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 text-gray-900 bg-white"
             >
               <option value="">Select a badge...</option>
               {AVAILABLE_BADGES.map(badge => (
