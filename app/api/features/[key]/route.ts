@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
+// Disable caching for this route
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // PATCH /api/features/[key] - Update a feature flag
 export async function PATCH(
   request: Request,
@@ -31,7 +35,16 @@ export async function PATCH(
 
     console.log(`✅ Feature flag '${params.key}' updated:`, updates)
 
-    return NextResponse.json({ success: true, data })
+    return NextResponse.json(
+      { success: true, data },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      }
+    )
   } catch (error: any) {
     console.error('Error updating feature flag:', error)
     return NextResponse.json(
@@ -55,7 +68,16 @@ export async function GET(
 
     if (error) throw error
 
-    return NextResponse.json({ success: true, data })
+    return NextResponse.json(
+      { success: true, data },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      }
+    )
   } catch (error: any) {
     console.error('Error fetching feature flag:', error)
     return NextResponse.json(

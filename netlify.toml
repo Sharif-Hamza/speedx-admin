@@ -5,3 +5,11 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Disable caching for API routes
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store, no-cache, must-revalidate, proxy-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+
