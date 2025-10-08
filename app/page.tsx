@@ -10,6 +10,7 @@ import AnnouncementsPanel from '@/components/AnnouncementsPanel'
 import FeatureManagementPanel from '@/components/FeatureManagementPanel'
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
+import FeatureFlagsPage from '../feature-flags/page'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -198,6 +199,12 @@ export default function DashboardPage() {
                 <p className="text-gray-600 mt-1">Enable or disable app features in real-time</p>
               </div>
               <FeatureManagementPanel />
+            </div>
+          )}
+          
+          {activeTab === 'feature-flags' && (
+            <div className="-m-6">
+              <FeatureFlagsPage />
             </div>
           )}
           

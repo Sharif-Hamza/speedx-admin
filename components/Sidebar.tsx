@@ -10,6 +10,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'users', label: 'Users', icon: '👥' },
     { id: 'features', label: 'Features', icon: '🎛️' },
+    { id: 'feature-flags', label: 'Feature Flags', icon: '🚩' },
     { id: 'announcements', label: 'Announcements', icon: '📢' },
     { id: 'analytics', label: 'Analytics', icon: '📈' },
     { id: 'settings', label: 'Settings', icon: '⚙️' },
