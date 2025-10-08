@@ -201,16 +201,6 @@ export default function DashboardPage() {
             </div>
           )}
           
-          {activeTab === 'feature-flags' && (
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Feature Flags</h1>
-                <p className="text-gray-600 mt-1">Control app features in real-time</p>
-              </div>
-              <FeatureManagementPanel />
-            </div>
-          )}
-          
           {activeTab === 'analytics' && (
             <div className="space-y-6">
               <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
