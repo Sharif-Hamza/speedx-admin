@@ -10,45 +10,86 @@ export default function FeatureManagementPanel() {
 
   useEffect(() => {
     fetchFeatures()
-    // Poll for updates every 10 seconds to stay in sync
-    const interval = setInterval(fetchFeatures, 10000)
+    // Poll for updates every 30 seconds to stay in sync (increased to avoid conflicts)
+    const interval = setInterval(() => {
+      // Only fetch if not currently updating to avoid race conditions
+      if (!updating) {
+        fetchFeatures()
+      }
+    }, 30000)
     return () => clearInterval(interval)
-  }, [])
+  }, [updating])
 
   const fetchFeatures = async () => {
     try {
-      const res = await fetch('/api/features')
+      const res = await fetch('/api/features', {
+        cache: 'no-store', // Disable caching to get fresh data
+        headers: {
+          'Cache-Control': 'no-cache',
+        }
+      })
       const json = await res.json()
       if (json.success) {
+        console.log('✅ Fetched features:', json.data.map(f => `${f.feature_key}: ${f.enabled}`))
         setFeatures(json.data)
+      } else {
+        console.error('❌ Failed to fetch features:', json.error)
       }
     } catch (error) {
-      console.error('Error fetching features:', error)
+      console.error('❌ Error fetching features:', error)
     } finally {
       setLoading(false)
     }
   }
 
   const toggleFeature = async (featureKey: string, currentState: boolean) => {
+    const newState = !currentState
     setUpdating(featureKey)
+    
+    console.log(`🔄 Toggling ${featureKey}: ${currentState} → ${newState}`)
+    
+    // Optimistic update
+    setFeatures(prev =>
+      prev.map(f =>
+        f.feature_key === featureKey ? { ...f, enabled: newState } : f
+      )
+    )
+    
     try {
       const res = await fetch(`/api/features/${featureKey}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabled: !currentState })
+        body: JSON.stringify({ enabled: newState })
       })
 
       const json = await res.json()
       if (json.success) {
-        // Update local state immediately for instant feedback
+        console.log(`✅ ${featureKey} updated successfully to: ${json.data.enabled}`)
+        // Update with server response to ensure consistency
         setFeatures(prev =>
           prev.map(f =>
-            f.feature_key === featureKey ? { ...f, enabled: !currentState } : f
+            f.feature_key === featureKey ? json.data : f
           )
         )
+      } else {
+        console.error(`❌ Failed to toggle ${featureKey}:`, json.error)
+        // Revert optimistic update on failure
+        setFeatures(prev =>
+          prev.map(f =>
+            f.feature_key === featureKey ? { ...f, enabled: currentState } : f
+          )
+        )
+        alert(`Failed to toggle ${featureKey}: ${json.error}`)
       }
     } catch (error) {
-      console.error('Error toggling feature:', error)
+      console.error(`❌ Error toggling ${featureKey}:`, error)
+      // Revert optimistic update on error
+      setFeatures(prev =>
+        prev.map(f =>
+          f.feature_key === featureKey ? { ...f, enabled: currentState } : f
+        )
+      )
+      alert(`Error toggling ${featureKey}. Check console for details.`)
     } finally {
       setUpdating(null)
     }
