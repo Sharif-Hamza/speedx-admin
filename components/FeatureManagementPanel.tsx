@@ -30,7 +30,7 @@ export default function FeatureManagementPanel() {
       })
       const json = await res.json()
       if (json.success) {
-        console.log('✅ Fetched features:', json.data.map(f => `${f.feature_key}: ${f.enabled}`))
+        console.log('✅ Fetched features:', json.data.map((f: FeatureFlag) => `${f.feature_key}: ${f.enabled}`))
         setFeatures(json.data)
       } else {
         console.error('❌ Failed to fetch features:', json.error)
