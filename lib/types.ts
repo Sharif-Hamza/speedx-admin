@@ -67,3 +67,17 @@ export interface DashboardStats {
   blitzCompleted: number
   badgesEarned: number
 }
+
+export interface FeatureFlag {
+  id: string
+  feature_key: string
+  feature_name: string
+  description?: string
+  enabled: boolean
+  config: Record<string, any>
+  updated_at: string
+  updated_by?: string
+  created_at: string
+}
+
+export type FeatureKey = 'blitz_mode' | 'badges' | 'simple_drive' | 'video_recaps' | 'leaderboards'

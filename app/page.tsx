@@ -7,6 +7,7 @@ import { DashboardStats } from '@/lib/types'
 import StatsCards from '@/components/StatsCards'
 import UsersTable from '@/components/UsersTable'
 import AnnouncementsPanel from '@/components/AnnouncementsPanel'
+import FeatureManagementPanel from '@/components/FeatureManagementPanel'
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
 
@@ -189,6 +190,16 @@ export default function DashboardPage() {
 
           {activeTab === 'users' && <UsersTable />}
           {activeTab === 'announcements' && <AnnouncementsPanel />}
+          
+          {activeTab === 'features' && (
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Feature Management</h1>
+                <p className="text-gray-600 mt-1">Enable or disable app features in real-time</p>
+              </div>
+              <FeatureManagementPanel />
+            </div>
+          )}
           
           {activeTab === 'analytics' && (
             <div className="space-y-6">
