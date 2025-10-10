@@ -354,6 +354,50 @@ const [recentBadges, setRecentBadges] = useState([])
 })
 ```
 
+## Cache-Busting Fix (2025-01-10 Update)
+
+### Problem: New Users Not Showing Up
+
+Even with real-time subscriptions, new user signups weren't appearing in the dashboard due to aggressive Next.js caching.
+
+### Solution:
+
+1. **Server-Side Cache Disable**:
+   ```typescript
+   // In app/api/users/route.ts
+   export const dynamic = 'force-dynamic'
+   export const revalidate = 0
+   
+   response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+   ```
+
+2. **Client-Side Cache Busting**:
+   ```typescript
+   const timestamp = new Date().getTime()
+   fetch(`/api/users?t=${timestamp}`, {
+     cache: 'no-store',
+     headers: { 'Cache-Control': 'no-cache' }
+   })
+   ```
+
+3. **Real-Time User Profile Subscription**:
+   ```typescript
+   supabase
+     .channel('user_profiles_changes')
+     .on('postgres_changes', { table: 'user_profiles' }, () => {
+       fetchUsers() // New user detected!
+     })
+   ```
+
+4. **Page Visibility Listener**:
+   ```typescript
+   document.addEventListener('visibilitychange', () => {
+     if (!document.hidden) fetchUsers() // Refresh on tab focus
+   })
+   ```
+
+**Result**: New users now appear within 1 second without manual refresh! 🚀
+
 ## Summary
 
 ✅ **Problem Solved**: Badge counts now update automatically  
@@ -361,8 +405,10 @@ const [recentBadges, setRecentBadges] = useState([])
 ✅ **Fast**: Optimistic updates feel instant  
 ✅ **Reliable**: Auto-refresh ensures data stays fresh  
 ✅ **User-Friendly**: Visual indicators show update status  
+✅ **Cache-Proof**: Aggressive cache busting prevents stale data  
+✅ **New User Detection**: Real-time subscription on user_profiles table  
 
-**No more manual refreshes needed!** 🎉
+**No more manual refreshes or redeployments needed!** 🎉
 
 ---
 

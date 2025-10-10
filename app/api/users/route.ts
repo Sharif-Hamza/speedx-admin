@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
+// Disable caching for this API route
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   try {
     console.log('🔍 [API /users] Fetching users...')
@@ -85,10 +89,18 @@ export async function GET() {
     console.log(`✅ [API /users] Returning ${users.length} users with full data`)
     console.log('📊 [API /users] Sample:', users.slice(0, 2))
 
-    return NextResponse.json({ 
+    const response = NextResponse.json({ 
       users,
       total: users.length 
     })
+    
+    // Set aggressive anti-cache headers
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    response.headers.set('Surrogate-Control', 'no-store')
+    
+    return response
   } catch (error: any) {
     console.error('❌ [API /users] Fatal error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })

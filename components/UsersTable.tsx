@@ -52,8 +52,10 @@ export default function UsersTable() {
   useEffect(() => {
     fetchUsers()
     
-    // Set up real-time subscription for badge changes
-    const subscription = supabase
+    console.log('🔌 [UsersTable] Setting up real-time subscriptions...')
+    
+    // Subscription 1: Badge changes
+    const badgeSubscription = supabase
       .channel('user_badges_changes')
       .on(
         'postgres_changes',
@@ -64,7 +66,23 @@ export default function UsersTable() {
         },
         (payload) => {
           console.log('🔔 [Real-time] Badge change detected:', payload)
-          // Refresh users when badges change
+          fetchUsers()
+        }
+      )
+      .subscribe()
+
+    // Subscription 2: New user signups (monitors user_profiles table)
+    const userSubscription = supabase
+      .channel('user_profiles_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to new users and profile updates
+          schema: 'public',
+          table: 'user_profiles'
+        },
+        (payload) => {
+          console.log('🔔 [Real-time] New user/profile change detected:', payload)
           fetchUsers()
         }
       )
@@ -76,11 +94,22 @@ export default function UsersTable() {
       fetchUsers()
     }, 30000) // 30 seconds
 
-    // Cleanup subscription and interval on unmount
+    // Refresh when tab becomes visible (fixes stale data when switching tabs)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('👁️ [Visibility] Tab became visible, refreshing...')
+        fetchUsers()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    // Cleanup subscriptions and listeners on unmount
     return () => {
-      console.log('📡 [Real-time] Unsubscribing from badge changes')
-      subscription.unsubscribe()
+      console.log('📡 [Real-time] Cleaning up subscriptions...')
+      badgeSubscription.unsubscribe()
+      userSubscription.unsubscribe()
       clearInterval(refreshInterval)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [])
 
@@ -95,9 +124,15 @@ export default function UsersTable() {
       
       console.log('🔄 [UsersTable] Fetching users from API...')
       
-      // Fetch from API route (now includes trip and badge counts)
-      const response = await fetch('/api/users', {
-        cache: 'no-store',  // Force fresh data
+      // Add cache-busting timestamp to force absolutely fresh data
+      const timestamp = new Date().getTime()
+      const response = await fetch(`/api/users?t=${timestamp}`, {
+        cache: 'no-store',  // Disable Next.js cache
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
       })
       const data = await response.json()
       
