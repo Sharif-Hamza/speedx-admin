@@ -46,14 +46,53 @@ export default function UsersTable() {
   const [showBadgeModal, setShowBadgeModal] = useState(false)
   const [selectedBadge, setSelectedBadge] = useState('')
   const [awarding, setAwarding] = useState(false)
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
     fetchUsers()
+    
+    // Set up real-time subscription for badge changes
+    const subscription = supabase
+      .channel('user_badges_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'user_badges'
+        },
+        (payload) => {
+          console.log('🔔 [Real-time] Badge change detected:', payload)
+          // Refresh users when badges change
+          fetchUsers()
+        }
+      )
+      .subscribe()
+
+    // Auto-refresh every 30 seconds as fallback
+    const refreshInterval = setInterval(() => {
+      console.log('⏰ [Auto-refresh] Fetching latest user data...')
+      fetchUsers()
+    }, 30000) // 30 seconds
+
+    // Cleanup subscription and interval on unmount
+    return () => {
+      console.log('📡 [Real-time] Unsubscribing from badge changes')
+      subscription.unsubscribe()
+      clearInterval(refreshInterval)
+    }
   }, [])
 
   async function fetchUsers() {
     try {
-      setLoading(true)
+      // Show spinner only on initial load, use refresh indicator for updates
+      if (users.length === 0) {
+        setLoading(true)
+      } else {
+        setIsRefreshing(true)
+      }
+      
       console.log('🔄 [UsersTable] Fetching users from API...')
       
       // Fetch from API route (now includes trip and badge counts)
@@ -83,6 +122,7 @@ export default function UsersTable() {
       }))
 
       setUsers(usersWithStats)
+      setLastUpdated(new Date())
       console.log(`✅ [UsersTable] Loaded ${usersWithStats.length} users`)
       console.log('📊 [UsersTable] First user sample:', usersWithStats[0])
     } catch (error) {
@@ -90,6 +130,7 @@ export default function UsersTable() {
       alert('❌ Failed to load users. Please check the console for details.')
     } finally {
       setLoading(false)
+      setIsRefreshing(false)
     }
   }
 
@@ -97,7 +138,19 @@ export default function UsersTable() {
     if (!selectedUser || !selectedBadge) return
     
     setAwarding(true)
+    
+    // Optimistic UI update - increment badge count immediately
+    setUsers(prevUsers => 
+      prevUsers.map(u => 
+        u.id === selectedUser.id 
+          ? { ...u, badgeCount: (u.badgeCount || 0) + 1 }
+          : u
+      )
+    )
+    
     try {
+      console.log(`🏆 [Badge] Awarding "${selectedBadge}" to ${selectedUser.email}...`)
+      
       const { error } = await supabase
         .from('user_badges')
         .insert({
@@ -107,12 +160,31 @@ export default function UsersTable() {
       
       if (error) throw error
       
+      console.log(`✅ [Badge] Successfully awarded "${selectedBadge}"!`)
+      
+      // Show success message
       alert(`✅ Badge "${selectedBadge}" awarded to ${selectedUser.email}!`)
+      
+      // Close modal
       setShowBadgeModal(false)
       setSelectedBadge('')
-      await fetchUsers() // Refresh
+      
+      // Force refresh to ensure data is in sync
+      console.log('🔄 [Badge] Refreshing user list...')
+      await fetchUsers()
+      
     } catch (error: any) {
-      console.error('Error awarding badge:', error)
+      console.error('❌ [Badge] Error awarding badge:', error)
+      
+      // Revert optimistic update on error
+      setUsers(prevUsers => 
+        prevUsers.map(u => 
+          u.id === selectedUser.id 
+            ? { ...u, badgeCount: Math.max(0, (u.badgeCount || 0) - 1) }
+            : u
+        )
+      )
+      
       alert(`❌ Failed to award badge: ${error.message}`)
     } finally {
       setAwarding(false)
@@ -129,13 +201,31 @@ export default function UsersTable() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">{users.length} total users</p>
+          <div className="flex items-center gap-3 mt-1">
+            <p className="text-gray-600">{users.length} total users</p>
+            {isRefreshing && (
+              <span className="flex items-center text-sm text-blue-600">
+                <svg className="animate-spin h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Updating...
+              </span>
+            )}
+            <span className="text-xs text-gray-500">
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </span>
+          </div>
         </div>
         <button
           onClick={() => fetchUsers()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          disabled={isRefreshing}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
-          🔄 Refresh
+          <svg className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Refresh
         </button>
       </div>
 
