@@ -54,48 +54,40 @@ export default function UsersTable() {
   async function fetchUsers() {
     try {
       setLoading(true)
+      console.log('🔄 [UsersTable] Fetching users from API...')
       
-      // Fetch from API route
-      const response = await fetch('/api/users')
+      // Fetch from API route (now includes trip and badge counts)
+      const response = await fetch('/api/users', {
+        cache: 'no-store',  // Force fresh data
+      })
       const data = await response.json()
       
       if (data.error) {
+        console.error('❌ [UsersTable] API error:', data.error)
         throw new Error(data.error)
       }
 
-      // For each user, get their trip count and badge count
-      const usersWithStats = await Promise.all(
-        (data.users || []).map(async (user: any) => {
-          const { count: tripCount } = await supabase
-            .from('trips')
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', user.id)
-
-          const { count: badgeCount } = await supabase
-            .from('user_badges')
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', user.id)
-
-          return {
-            id: user.id,
-            user_id: user.id,
-            email: user.email,
-            email_confirmed: user.email_confirmed,
-            created_at: user.created_at,
-            last_sign_in_at: user.last_sign_in_at,
-            username: user.username,
-            total_distance_m: user.total_distance_m || 0,
-            total_trips: user.total_trips || 0,
-            tripCount: tripCount || 0,
-            badgeCount: badgeCount || 0,
-          }
-        })
-      )
+      // API now provides all data including counts
+      const usersWithStats = (data.users || []).map((user: any) => ({
+        id: user.id,
+        user_id: user.id,
+        email: user.email,
+        email_confirmed: user.email_confirmed,
+        created_at: user.created_at,
+        last_sign_in_at: user.last_sign_in_at,
+        username: user.username,
+        total_distance_m: user.total_distance_m || 0,
+        total_trips: user.total_trips || 0,
+        tripCount: user.tripCount || 0,
+        badgeCount: user.badgeCount || 0,
+      }))
 
       setUsers(usersWithStats)
-      console.log('✅ Loaded', usersWithStats.length, 'users')
+      console.log(`✅ [UsersTable] Loaded ${usersWithStats.length} users`)
+      console.log('📊 [UsersTable] First user sample:', usersWithStats[0])
     } catch (error) {
-      console.error('Error fetching users:', error)
+      console.error('❌ [UsersTable] Error fetching users:', error)
+      alert('❌ Failed to load users. Please check the console for details.')
     } finally {
       setLoading(false)
     }
