@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@parse/node-apn": "^6.5.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.39.3",
     "date-fns": "^3.3.1",

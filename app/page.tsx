@@ -10,6 +10,10 @@ import AnnouncementsPanel from '@/components/AnnouncementsPanel'
 import FeatureManagementPanel from '@/components/FeatureManagementPanel'
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
+import dynamic from 'next/dynamic'
+
+// Dynamically import NotificationsPage to avoid SSR issues
+const NotificationsPage = dynamic(() => import('./notifications/page'), { ssr: false })
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -189,6 +193,7 @@ export default function DashboardPage() {
           )}
 
           {activeTab === 'users' && <UsersTable />}
+          {activeTab === 'notifications' && <NotificationsPage />}
           {activeTab === 'announcements' && <AnnouncementsPanel />}
           
           {activeTab === 'features' && (
