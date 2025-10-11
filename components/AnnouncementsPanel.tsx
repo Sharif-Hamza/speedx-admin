@@ -11,9 +11,11 @@ export default function AnnouncementsPanel() {
   const [formData, setFormData] = useState({
     title: '',
     message: '',
+    icon: '📢',
     priority: 'medium',
     target: 'all',
-    active: true
+    active: true,
+    sendPush: true
   })
 
   useEffect(() => {
@@ -40,31 +42,48 @@ export default function AnnouncementsPanel() {
     e.preventDefault()
     
     try {
-      const { error } = await supabase
-        .from('announcements')
-        .insert([{
-          ...formData,
-          created_by: 'admin', // Replace with actual admin ID
-          created_at: new Date().toISOString()
-        }])
+      // Call API route which handles both DB insert AND push notifications
+      const response = await fetch('/api/announcements/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.title,
+          message: formData.message,
+          icon: formData.icon,
+          priority: formData.priority,
+          createdBy: 'admin',
+          sendPush: formData.sendPush
+        })
+      })
 
-      if (error) throw error
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to create announcement')
+      }
+
+      const result = await response.json()
+      console.log('✅ Announcement created:', result)
 
       // Reset form and refresh
       setFormData({
         title: '',
         message: '',
+        icon: '📢',
         priority: 'medium',
         target: 'all',
-        active: true
+        active: true,
+        sendPush: true
       })
       setShowForm(false)
       fetchAnnouncements()
       
-      alert('✅ Announcement posted successfully!')
+      const pushMsg = result.push 
+        ? `🔔 Push notification sent to ${result.push.sent} device(s)!` 
+        : ''
+      alert(`✅ Announcement posted successfully! ${pushMsg}`)
     } catch (error) {
       console.error('Error creating announcement:', error)
-      alert('❌ Failed to post announcement')
+      alert(`❌ Failed to post announcement: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
@@ -177,16 +196,30 @@ export default function AnnouncementsPanel() {
               </div>
             </div>
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                checked={formData.active}
-                onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-              />
-              <label className="ml-2 text-sm text-gray-700">
-                Active (visible to users immediately)
-              </label>
+            <div className="space-y-3">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.active}
+                  onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                />
+                <label className="ml-2 text-sm text-gray-700">
+                  Active (visible to users immediately)
+                </label>
+              </div>
+              
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.sendPush}
+                  onChange={(e) => setFormData({ ...formData, sendPush: e.target.checked })}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                />
+                <label className="ml-2 text-sm text-gray-700">
+                  🔔 Send Push Notification (notify all users)
+                </label>
+              </div>
             </div>
 
             <button
