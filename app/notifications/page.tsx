@@ -28,7 +28,7 @@ export default function NotificationsPage() {
         userId: target === 'specific' ? userId : undefined,
       }
 
-      const res = await fetch('/api/push/send', {
+      const res = await fetch('https://speedx-push-server-production.up.railway.app/api/push/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
