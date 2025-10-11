@@ -56,16 +56,13 @@ export async function POST(request: Request) {
         },
       })
 
-      console.log('✅ [API /announcements/create] Push notification sent:', {
-        sent: pushResult.sent,
-        failed: pushResult.failed,
-      })
+      console.log('✅ [API /announcements/create] Push notification sent:', pushResult)
     }
 
     return NextResponse.json({
       success: true,
       announcement,
-      push: pushResult ? {
+      push: pushResult && 'sent' in pushResult ? {
         sent: pushResult.sent,
         failed: pushResult.failed,
       } : null,

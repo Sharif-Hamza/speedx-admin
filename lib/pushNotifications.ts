@@ -117,8 +117,11 @@ export async function sendPushNotification(options: SendNotificationOptions) {
     }
     notification.topic = process.env.APNS_BUNDLE_ID || ''
     notification.sound = payload.sound || 'default'
-    notification.badge = payload.badge
-    notification.category = payload.category
+    if (payload.badge !== undefined) {
+      notification.badge = payload.badge
+    }
+    // Note: category is not directly supported by node-apn types
+    // It can be passed via payload.data if needed
     notification.contentAvailable = true
     notification.mutableContent = true
     
@@ -147,7 +150,7 @@ export async function sendPushNotification(options: SendNotificationOptions) {
         body: payload.body,
         data: payload.data || {},
         status: failed ? 'failed' : 'sent',
-        error_message: failed ? failed.response.reason : null,
+        error_message: failed?.response?.reason || null,
       })
     }
 
@@ -163,7 +166,7 @@ export async function sendPushNotification(options: SendNotificationOptions) {
     // Deactivate invalid tokens
     if (results.failed.length > 0) {
       const invalidTokens = results.failed
-        .filter(f => f.response.reason === 'BadDeviceToken' || f.response.reason === 'Unregistered')
+        .filter(f => f.response?.reason === 'BadDeviceToken' || f.response?.reason === 'Unregistered')
         .map(f => f.device)
       
       if (invalidTokens.length > 0) {
@@ -292,9 +295,10 @@ export async function registerDeviceToken(
     // Create default notification preferences if they don't exist
     await supabaseAdmin
       .from('notification_preferences')
-      .insert({ user_id: userId })
-      .onConflict('user_id')
-      .select()
+      .upsert(
+        { user_id: userId },
+        { onConflict: 'user_id', ignoreDuplicates: true }
+      )
 
     return { success: true }
   } catch (error: any) {

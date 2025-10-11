@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       )
     }
 
-    if (result.success) {
+    if (result.success && 'sent' in result && 'failed' in result) {
       return NextResponse.json({
         success: true,
         sent: result.sent,
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       })
     } else {
       return NextResponse.json(
-        { error: result.message || 'Failed to send notification' },
+        { error: 'message' in result ? result.message : 'Failed to send notification' },
         { status: 500 }
       )
     }
