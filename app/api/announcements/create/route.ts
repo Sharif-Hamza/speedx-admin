@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { sendNotificationToAllUsers } from '@/lib/pushNotifications'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,21 +41,40 @@ export async function POST(request: Request) {
 
     console.log('✅ [API /announcements/create] Announcement saved to database')
 
-    // Send push notification to all users if requested
+    // Send push notification to all users if requested via Railway server
     let pushResult = null
     if (sendPush !== false) {
-      console.log('📨 [API /announcements/create] Broadcasting push notification...')
+      console.log('📨 [API /announcements/create] Broadcasting push notification via Railway...')
       
-      pushResult = await sendNotificationToAllUsers('announcement', {
-        title: `${icon || '📢'} ${title}`,
-        body: message,
-        data: {
-          type: 'announcement',
-          announcementId: announcement.id,
-        },
-      })
+      try {
+        const railwayResponse = await fetch(
+          'https://speedx-push-server-production.up.railway.app/api/push/send',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              target: 'all',
+              type: 'announcement',
+              title: `${icon || '📢'} ${title}`,
+              body: message,
+              data: {
+                type: 'announcement',
+                announcementId: announcement.id,
+              },
+            }),
+          }
+        )
 
-      console.log('✅ [API /announcements/create] Push notification sent:', pushResult)
+        if (railwayResponse.ok) {
+          pushResult = await railwayResponse.json()
+          console.log('✅ [API /announcements/create] Push notification sent:', pushResult)
+        } else {
+          const error = await railwayResponse.text()
+          console.error('❌ [API /announcements/create] Railway push failed:', error)
+        }
+      } catch (error) {
+        console.error('❌ [API /announcements/create] Error sending push:', error)
+      }
     }
 
     return NextResponse.json({
