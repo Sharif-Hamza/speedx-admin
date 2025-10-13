@@ -8,10 +8,12 @@ interface SidebarProps {
 export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+    { id: 'waitlist', label: 'Waitlist', icon: '📋' },
     { id: 'users', label: 'Users', icon: '👥' },
     { id: 'notifications', label: 'Push Notifications', icon: '🔔' },
     { id: 'features', label: 'Features', icon: '🎛️' },
     { id: 'announcements', label: 'Announcements', icon: '📢' },
+    { id: 'leaderboards', label: 'Leaderboards', icon: '🏆' },
     { id: 'analytics', label: 'Analytics', icon: '📈' },
     { id: 'settings', label: 'Settings', icon: '⚙️' },
   ]

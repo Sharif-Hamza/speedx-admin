@@ -8,12 +8,14 @@ import StatsCards from '@/components/StatsCards'
 import UsersTable from '@/components/UsersTable'
 import AnnouncementsPanel from '@/components/AnnouncementsPanel'
 import FeatureManagementPanel from '@/components/FeatureManagementPanel'
+import WaitlistManagement from '@/components/WaitlistManagement'
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
 import dynamic from 'next/dynamic'
 
 // Dynamically import NotificationsPage to avoid SSR issues
 const NotificationsPage = dynamic(() => import('./notifications/page'), { ssr: false })
+const LeaderboardsPage = dynamic(() => import('./leaderboards/page'), { ssr: false })
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -192,9 +194,11 @@ export default function DashboardPage() {
             </div>
           )}
 
+          {activeTab === 'waitlist' && <WaitlistManagement />}
           {activeTab === 'users' && <UsersTable />}
           {activeTab === 'notifications' && <NotificationsPage />}
           {activeTab === 'announcements' && <AnnouncementsPanel />}
+          {activeTab === 'leaderboards' && <LeaderboardsPage />}
           
           {activeTab === 'features' && (
             <div className="space-y-6">
