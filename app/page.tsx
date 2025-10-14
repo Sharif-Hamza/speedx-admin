@@ -9,6 +9,9 @@ import UsersTable from '@/components/UsersTable'
 import AnnouncementsPanel from '@/components/AnnouncementsPanel'
 import FeatureManagementPanel from '@/components/FeatureManagementPanel'
 import WaitlistManagement from '@/components/WaitlistManagement'
+import PrivacyPolicyEditor from '@/components/PrivacyPolicyEditor'
+import SupportRequestsViewer from '@/components/SupportRequestsViewer'
+import DataRequestsViewer from '@/components/DataRequestsViewer'
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
 import dynamic from 'next/dynamic'
@@ -198,6 +201,9 @@ export default function DashboardPage() {
           {activeTab === 'users' && <UsersTable />}
           {activeTab === 'notifications' && <NotificationsPage />}
           {activeTab === 'announcements' && <AnnouncementsPanel />}
+          {activeTab === 'privacy-policy' && <PrivacyPolicyEditor />}
+          {activeTab === 'support-requests' && <SupportRequestsViewer />}
+          {activeTab === 'data-requests' && <DataRequestsViewer />}
           {activeTab === 'leaderboards' && <LeaderboardsPage />}
           
           {activeTab === 'features' && (
