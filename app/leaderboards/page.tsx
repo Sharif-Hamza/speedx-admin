@@ -133,11 +133,19 @@ export default function LeaderboardsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Leaderboard Management</h1>
         <p className="text-zinc-400">Manage weekly resets and leaderboard data</p>
-        <div className="mt-4 bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
-          <p className="text-sm text-blue-400">
-            <strong>✅ Weekly filtering is now automatic!</strong> The dashboard filters trips by date automatically when users switch to "WEEKLY" mode. 
-            Data shows only trips from Sunday 12:00 AM onwards each week.
-          </p>
+        <div className="space-y-3 mt-4">
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+            <p className="text-sm text-blue-400">
+              <strong>✅ Weekly filtering is now automatic!</strong> The dashboard filters trips by date automatically when users switch to "WEEKLY" mode. 
+              Data shows only trips from Sunday 12:00 AM onwards each week.
+            </p>
+          </div>
+          <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+            <p className="text-sm text-green-400">
+              <strong>✅ CHG indicators are now automatic!</strong> The leaderboard automatically calculates position changes from last week's trip data. 
+              No manual snapshot creation needed - it works automatically with real-time fallback!
+            </p>
+          </div>
         </div>
       </div>
 
@@ -165,8 +173,11 @@ export default function LeaderboardsPage() {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white">Create Weekly Snapshot</h3>
-              <p className="text-sm text-zinc-400">Save positions for CHG tracking</p>
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                Create Weekly Snapshot
+                <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">OPTIONAL</span>
+              </h3>
+              <p className="text-sm text-zinc-400">Performance optimization (not required)</p>
             </div>
           </div>
 
@@ -177,15 +188,15 @@ export default function LeaderboardsPage() {
             </div>
             <div className="flex items-start gap-2">
               <span className="text-blue-500 mt-1">•</span>
-              <span>Enables CHG indicators for next week</span>
+              <span>Improves CHG calculation performance (faster loading)</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-blue-500 mt-1">•</span>
-              <span>Run this every Saturday night</span>
+              <span>Optional: CHG works automatically without snapshots</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-green-500 mt-1">✅</span>
-              <span className="text-green-500">Required for real-time CHG tracking</span>
+              <span className="text-green-500">CHG now works automatically via fallback calculation</span>
             </div>
           </div>
 
@@ -347,27 +358,40 @@ export default function LeaderboardsPage() {
 
       {/* Instructions Panel */}
       <div className="mt-8 bg-zinc-900 rounded-xl p-6 border border-zinc-800">
-        <h3 className="text-lg font-bold text-white mb-4">How Weekly Leaderboards Work</h3>
+        <h3 className="text-lg font-bold text-white mb-4">How Weekly Leaderboards Work (Updated!)</h3>
         <div className="space-y-3 text-sm text-zinc-300">
           <div className="flex items-start gap-3">
             <span className="text-2xl">1️⃣</span>
             <div>
-              <p className="font-semibold text-white mb-1">Automatic Date Filtering</p>
+              <p className="font-semibold text-white mb-1 flex items-center gap-2">
+                Automatic Date Filtering
+                <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">AUTO</span>
+              </p>
               <p>When users select "WEEKLY" mode, the dashboard automatically shows only trips from the current week (Sunday 12:00 AM onwards). This resets automatically every Sunday.</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <span className="text-2xl">2️⃣</span>
             <div>
-              <p className="font-semibold text-white mb-1">Position Change (CHG) Tracking</p>
-              <p>CHG indicators track how positions changed week-over-week. This is stored in browser localStorage and resets every Sunday at midnight automatically.</p>
+              <p className="font-semibold text-white mb-1 flex items-center gap-2">
+                Position Change (CHG) Tracking
+                <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">NEW! AUTO</span>
+              </p>
+              <p><strong className="text-green-400">Now fully automatic!</strong> CHG indicators automatically calculate position changes by comparing current week positions with last week's trip data. No manual snapshots needed - it works in real-time with automatic fallback calculation.</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <span className="text-2xl">3️⃣</span>
             <div>
-              <p className="font-semibold text-white mb-1">Manual CHG Reset (Admin)</p>
-              <p>Use "Reset Weekly Tracking" button above to manually clear CHG indicators for testing. Users must clear browser cache with <code className="bg-zinc-800 px-2 py-1 rounded">localStorage.clear()</code> to see the reset.</p>
+              <p className="font-semibold text-white mb-1">Optional Manual Snapshots</p>
+              <p>Snapshots are now <strong>optional</strong> for performance optimization. The system works automatically without them by calculating from trip data. You can still create snapshots manually for faster loading, but they're no longer required.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">4️⃣</span>
+            <div>
+              <p className="font-semibold text-white mb-1">How It Works</p>
+              <p>The dashboard first tries to load from snapshots (fast). If no snapshot exists, it automatically calculates positions from last week's trips (fallback). Users always see accurate CHG indicators - no "—" for users with previous data!</p>
             </div>
           </div>
         </div>
