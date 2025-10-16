@@ -230,7 +230,7 @@ export default function BannerManagement() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   placeholder="🚀 LAUNCH COUNTDOWN"
                 />
               </div>
@@ -247,7 +247,7 @@ export default function BannerManagement() {
                       type: e.target.value as 'static' | 'countdown' | 'live_update',
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 >
                   <option value="static">Static</option>
                   <option value="countdown">Countdown</option>
@@ -265,7 +265,7 @@ export default function BannerManagement() {
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 required
                 rows={2}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 placeholder="SpeedX Waitlist opens in:"
               />
             </div>
@@ -282,7 +282,7 @@ export default function BannerManagement() {
                     setFormData({ ...formData, countdown_target_date: e.target.value })
                   }
                   required={formData.type === 'countdown'}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 />
               </div>
             )}
@@ -307,7 +307,7 @@ export default function BannerManagement() {
                     onChange={(e) =>
                       setFormData({ ...formData, backgroundColor: e.target.value })
                     }
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                   />
                 </div>
               </div>
@@ -329,7 +329,7 @@ export default function BannerManagement() {
                     type="text"
                     value={formData.textColor}
                     onChange={(e) => setFormData({ ...formData, textColor: e.target.value })}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
                   />
                 </div>
               </div>
@@ -346,7 +346,7 @@ export default function BannerManagement() {
                   }
                   min="1"
                   max="10"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 />
               </div>
             </div>
@@ -359,7 +359,7 @@ export default function BannerManagement() {
                 <select
                   value={formData.visible_to}
                   onChange={(e) => setFormData({ ...formData, visible_to: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 >
                   <option value="all">All Users</option>
                   <option value="authenticated">Authenticated Only</option>
@@ -375,7 +375,7 @@ export default function BannerManagement() {
                   type="datetime-local"
                   value={formData.expires_at}
                   onChange={(e) => setFormData({ ...formData, expires_at: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 />
               </div>
             </div>
