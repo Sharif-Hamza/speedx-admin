@@ -12,6 +12,8 @@ import WaitlistManagement from '@/components/WaitlistManagement'
 import PrivacyPolicyEditor from '@/components/PrivacyPolicyEditor'
 import SupportRequestsViewer from '@/components/SupportRequestsViewer'
 import DataRequestsViewer from '@/components/DataRequestsViewer'
+import BannerManagement from '@/components/BannerManagement'
+import ChallengeManagement from '@/components/ChallengeManagement'
 import Sidebar from '@/components/Sidebar'
 import Header from '@/components/Header'
 import dynamic from 'next/dynamic'
@@ -200,11 +202,14 @@ export default function DashboardPage() {
           {activeTab === 'waitlist' && <WaitlistManagement />}
           {activeTab === 'users' && <UsersTable />}
           {activeTab === 'notifications' && <NotificationsPage />}
+          {activeTab === 'banners' && <BannerManagement />}
           {activeTab === 'announcements' && <AnnouncementsPanel />}
           {activeTab === 'privacy-policy' && <PrivacyPolicyEditor />}
           {activeTab === 'support-requests' && <SupportRequestsViewer />}
           {activeTab === 'data-requests' && <DataRequestsViewer />}
           {activeTab === 'leaderboards' && <LeaderboardsPage />}
+          
+          {activeTab === 'challenges' && <ChallengeManagement />}
           
           {activeTab === 'features' && (
             <div className="space-y-6">

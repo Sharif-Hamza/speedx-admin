@@ -12,6 +12,8 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
     { id: 'users', label: 'Users', icon: '👥' },
     { id: 'notifications', label: 'Push Notifications', icon: '🔔' },
     { id: 'features', label: 'Features', icon: '🎛️' },
+    { id: 'banners', label: 'Banners', icon: '🎯' },
+    { id: 'challenges', label: 'Challenges', icon: '🏁' },
     { id: 'announcements', label: 'Announcements', icon: '📢' },
     { id: 'leaderboards', label: 'Leaderboards', icon: '🏆' },
     { id: 'privacy-policy', label: 'Privacy Policy', icon: '📜' },
