@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [authChecking, setAuthChecking] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     checkAuth()
@@ -148,18 +149,23 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
+        <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
         
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-3 md:p-6">
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-600 mt-1">Welcome to SpeedX Admin Dashboard</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
+                <p className="text-sm md:text-base text-gray-600 mt-1">Welcome to SpeedX Admin Dashboard</p>
               </div>
               
               {loading ? (
@@ -212,30 +218,12 @@ export default function DashboardPage() {
           {activeTab === 'challenges' && <ChallengeManagement />}
           
           {activeTab === 'features' && (
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Feature Management</h1>
-                <p className="text-gray-600 mt-1">Enable or disable app features in real-time</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Feature Management</h1>
+                <p className="text-sm md:text-base text-gray-600 mt-1">Enable or disable app features in real-time</p>
               </div>
               <FeatureManagementPanel />
-            </div>
-          )}
-          
-          {activeTab === 'analytics' && (
-            <div className="space-y-6">
-              <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
-              <div className="bg-white rounded-lg shadow p-6">
-                <p className="text-gray-500">Advanced analytics and charts coming soon...</p>
-              </div>
-            </div>
-          )}
-          
-          {activeTab === 'settings' && (
-            <div className="space-y-6">
-              <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-              <div className="bg-white rounded-lg shadow p-6">
-                <p className="text-gray-500">App configuration settings coming soon...</p>
-              </div>
             </div>
           )}
         </main>
